@@ -36,9 +36,9 @@ def describew(df, var, weight):
         sumweights = np.sum(weights)
         offset = (weights[0] / sumweights) / 2.
         probs = np.cumsum(weights) / sumweights - offset
-        Q25.append(np.interp(x=0.25, xp=probs, fp=values_sort, left=None, right=None, period=None))
-        Q50.append(np.interp(x=0.50, xp=probs, fp=values_sort, left=None, right=None, period=None))
-        Q75.append(np.interp(x=0.75, xp=probs, fp=values_sort, left=None, right=None, period=None))
+        Q25.append(np.interp(x=0.25, xp=probs, fp=values_sort))
+        Q50.append(np.interp(x=0.50, xp=probs, fp=values_sort))
+        Q75.append(np.interp(x=0.75, xp=probs, fp=values_sort))
 
     # Tabluating the results
     result = pd.DataFrame({'': variables,
