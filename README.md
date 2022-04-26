@@ -1,5 +1,5 @@
 # Describew
- A function that returns the same output of .describe(). but considering a weight variable.
+ A function that returns the same output of .describe(), but considering a weight variable.
  It was designed originally to deal with drill holes, on the exploratory data analysis procedures.
  
 ## Mandatory libraries
