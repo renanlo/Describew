@@ -11,10 +11,16 @@ def describew(df, var, weight):
         Count.append(len(df[v]))
         wavrg = np.average(df[v], weights=df[weight])
         WMean.append(wavrg)
-        variance = (np.average((df[v] - wavrg) ** 2, weights=df[weight]))
-        STD.append(math.sqrt(variance))
         Minimum.append(df[v].min())
         Maximum.append(df[v].max())
+
+        # Variance and STD determination
+        v1 = df[weight].sum()
+        v1exp2 = v1 ** 2
+        v2 = (df[weight] ** 2).sum()
+        numerator = (((df[v] - wavrg) ** 2) * df[weight]).sum()
+        variance = v1 / (v1exp2 - v2) * numerator
+        STD.append(math.sqrt(variance))
 
         # Quantiles determination
         sort_idx = np.argsort(df[v])
@@ -40,6 +46,7 @@ def describew(df, var, weight):
                            '50%': Q50,
                            '75%': Q75,
                            'max': Maximum,
-                           'weight': weight})
+                           'weight': weight,
+                           'variance': variance})
     result.set_index('', inplace=True)
     return result.transpose()
