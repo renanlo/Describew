@@ -75,5 +75,7 @@ describew(df, variables, 'length')
 ![This is an image](describe_comparison.png)
 ## Extra information
 To the most interested ones, the weighted-variance formula is the one below.
+
 ![This is an image](variance_formula.png)
+
 Where V1 is the sum of the weights and V2 is the sum of squared weights.
