@@ -6,7 +6,8 @@ import pandas.io.formats.format as fmt
 
 
 def describew(df, weight, percentiles=None, include=None, exclude=None):
-    variables, Count, WMean, STD, Minimum, Maximum = (
+    variables, Count, WMean, STD, variances, Minimum, Maximum = (
+        [],
         [],
         [],
         [],
@@ -27,26 +28,31 @@ def describew(df, weight, percentiles=None, include=None, exclude=None):
     percentiles = dict(zip(fmt.format_percentiles(percentiles), percentiles))
     Q = {p: [] for p in percentiles}
     for i, v in enumerate(var):
+        #filtering out NaN
+        both_defined = np.isfinite(df[v]) & np.isfinite(w)
+        fv = df[v][both_defined].values #filtered variable
+        fw = w[both_defined].values #filtered weights
         # Count, weighted mean, std, minimum and maximum determination
         variables.append(var[i])
-        Count.append(len(df[v]))
-        wavrg = np.average(df[v], weights=w)
+        Count.append(len(fv))
+        wavrg = np.average(fv, weights=fw)
         WMean.append(wavrg)
-        Minimum.append(df[v].min())
-        Maximum.append(df[v].max())
+        Minimum.append(fv.min())
+        Maximum.append(fv.max())
 
         # Variance and STD determination
-        v1 = w.sum()
+        v1 = fw.sum()
         v1exp2 = v1 ** 2
-        v2 = (w ** 2).sum()
-        numerator = (((df[v] - wavrg) ** 2) * w).sum()
+        v2 = (fw ** 2).sum()
+        numerator = (((fv - wavrg) ** 2) * fw).sum()
         variance = v1 / (v1exp2 - v2) * numerator
+        variances.append(variance)
         STD.append(math.sqrt(variance))
 
         # Quantiles determination
-        sort_idx = np.argsort(df[v])
-        values_sort = df[v][sort_idx]
-        weight_sort = w[sort_idx]
+        sort_idx = np.argsort(fv)
+        values_sort = fv[sort_idx]
+        weight_sort = fw[sort_idx]
 
         assert np.sum(weight_sort) != 0.0, "The sum of the weights must not equal zero"
         weights = np.array(weight_sort)
@@ -62,17 +68,16 @@ def describew(df, weight, percentiles=None, include=None, exclude=None):
             "": variables,
             "count": Count,
             "wmean": WMean,
+            "variance": variances,
             "std": STD,
             "min": Minimum,
             **Q,
             "max": Maximum,
             "weight": weight,
-            "variance": variance,
         }
     )
     result.set_index("", inplace=True)
     return result.transpose()
-
 
 @pd.api.extensions.register_dataframe_accessor("describew")
 class DescribewAccessor:

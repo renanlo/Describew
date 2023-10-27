@@ -76,7 +76,7 @@ After that, it is necessary to create a list with the variables that you want to
 Finally, to call the function it will need three parameters, the dataframe, list of variables and the weight variable to be used. The weight variable needs to be inserted as it is in the dataframe. 
 ```python
 variables = ['au_ppm', 'ag_ppm', 'cu_pct']
-describew(df, variables, 'length')
+describew(df, weight='length', include=variables)
 ```
 ![This is an image](describe_comparison.png)
 ## Extra information
